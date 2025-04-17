@@ -5,7 +5,7 @@ const fileName = "random-bytes.bin";
 
 const writer = fs.createWriteStream(fileName);
 
-async function writetoStream(bytesToWrite, callback) {
+export default async function writetoStream(bytesToWrite, callback) {
     const step = 1000;
     let i = bytesToWrite;
 
@@ -36,5 +36,3 @@ async function writetoStream(bytesToWrite, callback) {
         write();
     });
 }
-
-module.exports = writetoStream;
