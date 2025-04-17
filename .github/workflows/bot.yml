@@ -26,7 +26,8 @@ jobs:
             python-is-python3
 
       - name: Install Chrome
-        run: echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+        run: |
+          echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
     
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
