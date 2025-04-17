@@ -32,7 +32,7 @@ const client = new Client({
 
 // Event listeners
 client.on('qr', qr => {
-  console.log('📲 Scan this QR code:');
+  console.log('📲 Scan this QR code:', qr);
   qrcode.generate(qr, { small: true });
 });
 
