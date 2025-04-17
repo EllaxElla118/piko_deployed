@@ -25,13 +25,11 @@ jobs:
             python3-pip \
             python-is-python3
 
-      - name: Install Chrome
-        run: |
-          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-          && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list \
-          && apt-get update \
-          && apt-get install -y google-chrome-stable \
-          && rm -rf /var/lib/apt/lists/*
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          channel: stable     # options: stable, beta, dev
+
 
       - name: Install Dependencies
         run: npm install
