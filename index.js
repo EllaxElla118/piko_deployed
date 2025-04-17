@@ -288,7 +288,7 @@ client.on('message', async msg => {
     }
     await setState('none', chat); 
   } catch(e) {
-    console.error('An error occured');
+    console.error('An error occured', e);
   }
 });
   
