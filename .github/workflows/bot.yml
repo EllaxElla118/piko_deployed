@@ -25,11 +25,29 @@ jobs:
             python3-pip \
             python-is-python3
 
-      - name: Set up Chrome
-        uses: browser-actions/setup-chrome@v1
-        with:
-          channel: stable     # options: stable, beta, dev
+      - name: Install Google Chrome
+        run: |
+          # 1. Update and install prerequisites
+          sudo apt-get update                                    # refresh package lists :contentReference[oaicite:3]{index=3}
+          sudo apt-get install -y curl gnupg ca-certificates     # for key handling :contentReference[oaicite:4]{index=4}
 
+          # 2. Retrieve and dearmor Google’s signing key
+          sudo mkdir -p /etc/apt/keyrings                         # ensure keyring dir :contentReference[oaicite:5]{index=5}
+          curl -fsSL https://dl.google.com/linux/linux_signing_key.pub \
+          | gpg --dearmor \
+          | sudo tee /etc/apt/keyrings/google.gpg > /dev/null   # write key under sudo :contentReference[oaicite:6]{index=6}
+
+          # 3. Add Chrome APT repository
+          echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.gpg] \
+          http://dl.google.com/linux/chrome/deb/ stable main" \
+          | sudo tee /etc/apt/sources.list.d/google-chrome.list # proper tee usage :contentReference[oaicite:7]{index=7}
+
+          # 4. Install Chrome
+          sudo apt-get update                                    # pick up new repo :contentReference[oaicite:8]{index=8}
+          sudo apt-get install -y google-chrome-stable            # install stable channel :contentReference[oaicite:9]{index=9}
+
+          # 5. Clean up
+          sudo rm -rf /var/lib/apt/lists/*                        # reduce runner footprint :contentReference[oaicite:10]{index=10}
 
       - name: Install Dependencies
         run: npm install
