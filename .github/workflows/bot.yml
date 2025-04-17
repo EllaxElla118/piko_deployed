@@ -30,7 +30,6 @@ jobs:
     
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
-          sudo rm -rf /var/lib/apt/lists/*
 
       - name: Install Dependencies
         run: npm install
