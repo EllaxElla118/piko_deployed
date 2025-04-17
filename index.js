@@ -17,6 +17,7 @@ import { anisearch } from './anime.cjs';
 import anidl from './anidl.cjs';
 import { ytdl } from './downloader.cjs';
 import chatFunction from './chat.cjs';
+import removebg from './removebg.js'
 
 const { Client, RemoteAuth, MessageMedia } = pkg;
 
@@ -163,9 +164,17 @@ client.on('message', async msg => {
       } else {
         msg.reply('Please tag the message to be pinned');
       }
-    } else if(msg.body.startsWith('/test ')) {
-        let name = await pdfGen(1024*1024*parseInt(msg.body.split(' ')[1]), () => console.log(`File created`));
-        await client.sendLargeMedia(name, chat.id._serialized);
+    } else if(msg.body.startsWith('/removebg')) {
+      if(!msg.hasQuotedMsg) {await msg.reply('You forgot to tag the image');return}
+      let media = await quotedMsg.downloadMedia();
+      if(!media || !media?.data) {await msg.reply('Something went wrong');return}
+      const output = `${(Math.random()*(10e10)).toFixed()}.jpg`;
+      const buffer = Buffer.from(media.data, 'base64');
+      fs.writeFileSync(output,buffer);
+      let outputUrl = await removebg(output);
+      let output = await MessageMedia.fromUrl(outputUrl);
+      if(!output) {await msg.reply('Something went wrong');return}
+      await chat.sendMessage(output, {quotedMessageId: msg.id._serialized, sendMediaAsDocument: true});
     } else if (msg.body.startsWith('/chat ')) {
       let a = msg.body.replace("/chat ", "");
       let res = await chatFunction(a);
@@ -199,7 +208,8 @@ client.on('message', async msg => {
     } else if(msg.body.startsWith('/anidl')) {
       let parts = msg.body.split(' ');
       let vid = await anidl(parts[1],parts[2]);
-      await chat.sendMessage(MessageMedia.fromFilePath(vid),{ quotedMessageId: msg.id._serialized });
+      let stats = fs.statSync(vid);
+      await chat.sendMessage(MessageMedia.fromFilePath(vid),{ quotedMessageId: msg.id._serialized, sendMediaAsDocument: stats.size > 10*1024*1024 });
     } else if(msg.body === '/sticker') {
         if(!msg.hasQuotedMsg) {
           msg.reply('Please tag the image/video to convert to a sticker');return
