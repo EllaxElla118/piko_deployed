@@ -18,6 +18,7 @@ import anidl from './anidl.cjs';
 import { ytdl } from './downloader.cjs';
 import chatFunction from './chat.cjs';
 import removebg from './removebg.js'
+import carbonize from './carbon.js'
 
 const { Client, RemoteAuth, MessageMedia } = pkg;
 
@@ -168,13 +169,19 @@ client.on('message', async msg => {
       if(!msg.hasQuotedMsg) {await msg.reply('You forgot to tag the image');return}
       let media = await quotedMsg.downloadMedia();
       if(!media || !media?.data) {await msg.reply('Something went wrong');return}
-      const output = `${(Math.random()*(10e10)).toFixed()}.jpg`;
+      const output = `${(Math.random()*(10e10)).toFixed()}_media_dl.jpg`;
       const buffer = Buffer.from(media.data, 'base64');
       fs.writeFileSync(output,buffer);
       let outputUrl = await removebg(output);
-      let media = await MessageMedia.fromUrl(outputUrl);
-      if(!media) {await msg.reply('Something went wrong');return}
-      await chat.sendMessage(media, {quotedMessageId: msg.id._serialized, sendMediaAsDocument: true});
+      let mediaData = await MessageMedia.fromUrl(outputUrl);
+      if(!mediaData) {await msg.reply('Something went wrong');return}
+      await chat.sendMessage(mediaData, {quotedMessageId: msg.id._serialized, sendMediaAsDocument: true});
+    } else if(msg.body === '/carbon') {
+        if(!msg.hasQuotedMsg) { msg.reply('You forgot to tag the code to carbonize') }
+        let quotedMsg = await msg.getQuotedMessage();
+        let carbonOutputPath = await carbonize(quotedMsg.body);
+        let carbonOutputMedia = await MessageMedia.fromFilePath(carbonOutputPath);
+        await chat.sendMessage(carbonOutputMedia, {quotedMessageId: msg.id._serialized});
     } else if (msg.body.startsWith('/chat ')) {
       let a = msg.body.replace("/chat ", "");
       let res = await chatFunction(a);
@@ -217,7 +224,7 @@ client.on('message', async msg => {
         let quotedMsg = await msg.getQuotedMessage();
         if(!quotedMsg.hasMedia) { msg.reply('Please tag an image/video to convert to a sticker');return  }
         let media = await quotedMsg.downloadMedia();
-        const output = `${(Math.random()*(10e10)).toFixed()}.jpg`;
+        const output = `${(Math.random()*(10e10)).toFixed()}_sticker.jpg`;
         const buffer = Buffer.from(media.data, 'base64');
         fs.writeFileSync(output,buffer);/*
         const ffmpegCmd = `ffmpeg -i ${output} -vcodec libwebp -lossless 1 ${output}.webp`;
@@ -281,7 +288,7 @@ client.on('message', async msg => {
     }
     await setState('none', chat); 
   } catch(e) {
-    console.error('An error occured')
+    console.error('An error occured');
   }
 });
   
