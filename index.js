@@ -172,9 +172,9 @@ client.on('message', async msg => {
       const buffer = Buffer.from(media.data, 'base64');
       fs.writeFileSync(output,buffer);
       let outputUrl = await removebg(output);
-      let output = await MessageMedia.fromUrl(outputUrl);
-      if(!output) {await msg.reply('Something went wrong');return}
-      await chat.sendMessage(output, {quotedMessageId: msg.id._serialized, sendMediaAsDocument: true});
+      let media = await MessageMedia.fromUrl(outputUrl);
+      if(!media) {await msg.reply('Something went wrong');return}
+      await chat.sendMessage(media, {quotedMessageId: msg.id._serialized, sendMediaAsDocument: true});
     } else if (msg.body.startsWith('/chat ')) {
       let a = msg.body.replace("/chat ", "");
       let res = await chatFunction(a);
