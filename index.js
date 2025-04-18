@@ -194,9 +194,9 @@ client.on('message', async msg => {
       } else {
         await msg.reply("Sorry, Can't chat right now, I've hit my chat limit... Try later");      
       }
-    } else if(msg.body === '/aniinfo ') {
+    } else if(msg.body.startsWith('/aniinfo ')) {
       let parts = msg.body.split(' ');
-      if(parts.length < 2) {
+      if(parts.length !== 2) {
         await msg.reply(`Correct usage is "/aniinfo [anime-id]", get the "anime-id" by running "/anisearch [Anime name]"`);return
       }
       let data = await aniinfo(parts[1]); 
@@ -217,7 +217,7 @@ client.on('message', async msg => {
       ${info.ep_end ? '\n\nPiko can download up to ' + info.ep_end + ' episodes for this anime. Use /anidl [anime-id] [episode-number] to download' : ''}`;
       await chat.sendMessage(media, {quotedMessageId: msg.id._serialized, caption: message_template});
     } else if(msg.body.startsWith('/anisearch')) {
-        if(msg.body.split(' ').length === 1) { msg.reply('Use this command as: `/anisearch _anime-name_`');return}
+        if(msg.body.split(' ').length === 1) { msg.reply('Use this command as:\n\n`/anisearch [anime-name]`');return}
         let y = msg.body.split(' ');
         y.shift();
         let name = y.join(' ');
