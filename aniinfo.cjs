@@ -29,7 +29,7 @@ async function aniinfo(id) {
     const dom = new JSDOM(html);
     const document = dom.window.document;
     let c = document.querySelectorAll('html body div#wrapper_inside div#wrapper div#wrapper_bg section.content section.content_left div.main_body div.anime_info_body div.anime_info_body_bg p.type');
-    if(!c) return { success: false }
+    if(!c) return { success: false, error: 'Couldnt fetch anime info' }
     let res = {
       name: document.querySelector('html body div#wrapper_inside div#wrapper div#wrapper_bg section.content section.content_left div.main_body div.anime_info_body div.anime_info_body_bg img').nextElementSibling.innerText,
       id: id,

@@ -197,10 +197,13 @@ client.on('message', async msg => {
     } else if(msg.body === '/aniinfo ') {
       let parts = msg.body.split(' ');
       if(parts.length < 2) {
-        msg.reply(`Correct usage is "/aniinfo [anime-id]", get the "anime-id" by running "/anisearch [Anime name]"`);return
+        await msg.reply(`Correct usage is "/aniinfo [anime-id]", get the "anime-id" by running "/anisearch [Anime name]"`);return
       }
-      let info = await aniinfo(parts[1]); 
-      let media = await MessageMedia.fromUrl(info.coverlink);
+      let data = await aniinfo(parts[1]); 
+      console.log(data);
+      if(!data.success) { await msg.reply(info.error || 'Something went wrong...');return }
+      let info = data.res;
+      let media = await MessageMedia.fromUrl(data.coverlink);
       let message_template = `Anime Info\n\n
       Name: ${info.name || 'unknown'}\n
       ID: ${info.id || 'unknown'}\n\n
