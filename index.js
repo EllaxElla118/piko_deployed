@@ -79,16 +79,8 @@ client.on('ready', () => {
 client.initialize();
 
 client.on('message', async msg => {
-  let chat = await msg.getChat();
-  async function bot_unreact() {
-    await setState('none', chat);
-    await msg.react('');
-  }
-  async function bot_react() {
-    await setState('typing', chat);
-    await msg.react('⏳');
-  }
   try {
+    let chat = await msg.getChat();
     if (msg.body.startsWith('/join ')) {
       await bot_react();
         const inviteCode = msg.body.split(' ')[1].replace("https://chat.whatsapp.com/", "");
@@ -213,13 +205,13 @@ client.on('message', async msg => {
       } else {
         await msg.reply("Sorry, Can't chat right now, I've hit my chat limit... Try later");      
       }
-    } else if(msg.body.startsWith('/aniinfo')) {
+    } else if(msg.body.startsWith('/aniinfo ')) {
       await bot_react();
-      let id = msg.body.replace('/aniinfo','');
-      /*if(parts.length !== 2) {
+      let parts = msg.body.split(' ');
+      if(parts.length !== 2) {
         await msg.reply(`Correct usage is "/aniinfo [anime-id]", get the "anime-id" by running "/anisearch [Anime name]"`);await bot_unreact();return
-      }*/
-      let data = await aniinfo(id); 
+      }
+      let data = await aniinfo(parts[1]); 
       console.log(data);
       if(!data.success) { await msg.reply(info.error || 'Something went wrong...');await bot_unreact();return }
       let info = data.res;
@@ -343,12 +335,18 @@ client.on('message', async msg => {
         }
       }
     }
+    async function bot_unreact() {
+      await setState('none', chat);
+      await msg.react('');
+    }
+    async function bot_react() {
+      await setState('typing', chat);
+      await msg.react('⏳');
+    }
     await bot_unreact();
     await setState('none', chat); 
   } catch(e) {
     console.error('An error occured', e);
-    msg.reply('Internal error occured, issue has been reported to the bot builder');
-    await bot_unreact();
   }
 });
   
