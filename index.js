@@ -170,7 +170,7 @@ client.on('message', async msg => {
       let quotedMsg = await msg.getQuotedMessage();
       if(!quotedMsg.hasMedia) {await msg.reply('You didnt tag an image');return}
       let media = await quotedMsg.downloadMedia();
-      if(media.mimetype !== 'image/jpg') {await msg.reply('Only jpg images are supported');return}
+      //if(media.mimetype !== 'image/jpg') {await msg.reply('Only jpg images are supported');return}
       if(!media || !media?.data) {await msg.reply('Something went wrong');return}
       const output = `${(Math.random()*(10e10)).toFixed()}_media_dl.jpg`;
       const buffer = Buffer.from(media.data, 'base64');
