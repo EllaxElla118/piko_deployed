@@ -167,17 +167,17 @@ client.on('message', async msg => {
         msg.reply('Please tag the message to be pinned');
       }
     } else if(msg.body.startsWith('/removebg')) {
-      if(!msg.hasQuotedMsg) {await msg.reply('You forgot to tag the image');return}
+      if(!msg.hasQuotedMsg) {await msg.reply('You forgot to tag the image');await bot_unreact();return}
       let quotedMsg = await msg.getQuotedMessage();
-      if(!quotedMsg.hasMedia) {await msg.reply('You didnt tag an image');return}
+      if(!quotedMsg.hasMedia) {await msg.reply('You didnt tag an image');await bot_unreact();return}
       let media = await quotedMsg.downloadMedia();
-      if(!media || !media?.data) {await msg.reply('Something went wrong');return}
+      if(!media || !media?.data) {await msg.reply('Something went wrong');await bot_unreact();return}
       const output = `${(Math.random()*(10e10)).toFixed()}_media_dl.jpg`;
       const buffer = Buffer.from(media.data, 'base64');
       fs.writeFileSync(output,buffer);
       let outputUrl = await removebg(output);
       let mediaData = await MessageMedia.fromUrl(outputUrl, {filename: `piko_removebg_${Date.now()}`});
-      if(!mediaData) {await msg.reply('Something went wrong');return}
+      if(!mediaData) {await msg.reply('Something went wrong');await bot_unreact();return}
       await chat.sendMessage(mediaData, {quotedMessageId: msg.id._serialized, sendMediaAsDocument: true});
       fs.unlinkSync(output);
     } else if(msg.body === '/carbon') {
@@ -197,11 +197,11 @@ client.on('message', async msg => {
     } else if(msg.body.startsWith('/aniinfo ')) {
       let parts = msg.body.split(' ');
       if(parts.length !== 2) {
-        await msg.reply(`Correct usage is "/aniinfo [anime-id]", get the "anime-id" by running "/anisearch [Anime name]"`);return
+        await msg.reply(`Correct usage is "/aniinfo [anime-id]", get the "anime-id" by running "/anisearch [Anime name]"`);await bot_unreact();return
       }
       let data = await aniinfo(parts[1]); 
       console.log(data);
-      if(!data.success) { await msg.reply(info.error || 'Something went wrong...');return }
+      if(!data.success) { await msg.reply(info.error || 'Something went wrong...');await bot_unreact();return }
       let info = data.res;
       let media = await MessageMedia.fromUrl(data.coverlink);
       let message_template = `Anime Info\n\n
@@ -217,13 +217,13 @@ client.on('message', async msg => {
       ${info.ep_end ? '\n\nPiko can download up to ' + info.ep_end + ' episodes for this anime. Use /anidl [anime-id] [episode-number] to download' : ''}`;
       await chat.sendMessage(media, {quotedMessageId: msg.id._serialized, caption: message_template});
     } else if(msg.body.startsWith('/anisearch')) {
-        if(msg.body.split(' ').length === 1) { msg.reply('Use this command as:\n\n`/anisearch [anime-name]`');return}
+        if(msg.body.split(' ').length === 1) { await msg.reply('Use this command as:\n\n`/anisearch [anime-name]`');await bot_unreact();return}
         let y = msg.body.split(' ');
         y.shift();
         let name = y.join(' ');
         let result = await anisearch(name);
-        if(!result.success) { msg.reply('Something is wrong with the anime plugin');return }
-        if(!result.results) { msg.reply('No results found, try shortening the search string, use Japanese name or checking the spelling');return  }
+        if(!result.success) { await msg.reply('Something is wrong with the anime plugin');await bot_unreact();return }
+        if(!result.results) { await msg.reply('No results found, try shortening the search string, use Japanese name or checking the spelling');await bot_unreact();return  }
         const formattedReply = 
   `🎌 *Anime Search Results* 🎏
   ────────────────
@@ -240,17 +240,17 @@ client.on('message', async msg => {
     } else if(msg.body.startsWith('/anidl')) {
       let parts = msg.body.split(' ');
       if(parts.length < 3) {
-        msg.reply(`Correct usage is "/anidl [id] [episode-number]"`);return
+        msg.reply(`Correct usage is "/anidl [id] [episode-number]"`);await bot_unreact();return
       }
       let vid = await anidl(parts[1],parts[2]);
       let stats = fs.statSync(vid);
       await chat.sendMessage(MessageMedia.fromFilePath(vid),{ quotedMessageId: msg.id._serialized, sendMediaAsDocument: stats.size > 10*1024*1024 });
     } else if(msg.body === '/sticker') {
         if(!msg.hasQuotedMsg) {
-          msg.reply('Please tag the image/video to convert to a sticker');return
+          msg.reply('Please tag the image/video to convert to a sticker');await bot_unreact();return
         }
         let quotedMsg = await msg.getQuotedMessage();
-        if(!quotedMsg.hasMedia) { msg.reply('Please tag an image/video to convert to a sticker');return  }
+        if(!quotedMsg.hasMedia) { msg.reply('Please tag an image/video to convert to a sticker');await bot_unreact();return  }
         let media = await quotedMsg.downloadMedia();
         const output = `${(Math.random()*(10e10)).toFixed()}_sticker.jpg`;
         const buffer = Buffer.from(media.data, 'base64');
@@ -272,7 +272,7 @@ client.on('message', async msg => {
         }
         const files = await fsPromises.readdir('./');
           const path = files.find(file => file.startsWith(result.filePath) && file.includes('.mp4')) || null;
-          if(!path) { msg.reply("Couldn't complete download");return }
+          if(!path) { msg.reply("Couldn't complete download");await bot_unreact();return }
         const ffmpegCmd = `ffmpeg -i ${path} -vf "scale='min(1280,iw)':'-2'" -c:v libx264 -profile:v baseline -level 3.0 -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart output_${path}`;
           let execPromise = util.promisify(exec);
           const { stdout, stderr } = await execPromise(ffmpegCmd);
@@ -317,7 +317,10 @@ client.on('message', async msg => {
         }
       }
     }
-    await msg.react('');
+    async function bot_unreact() {
+      await msg.react('');
+    }
+    await bot_unreact();
     await setState('none', chat); 
   } catch(e) {
     console.error('An error occured', e);
