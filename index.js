@@ -19,6 +19,7 @@ import { ytdl } from './downloader.cjs';
 import chatFunction from './chat.cjs';
 import removebg from './removebg.js'
 import carbonize from './carbon.js'
+import aniinfo from './aniinfo.cjs'
 
 const { Client, RemoteAuth, MessageMedia } = pkg;
 
@@ -170,13 +171,12 @@ client.on('message', async msg => {
       let quotedMsg = await msg.getQuotedMessage();
       if(!quotedMsg.hasMedia) {await msg.reply('You didnt tag an image');return}
       let media = await quotedMsg.downloadMedia();
-      //if(media.mimetype !== 'image/jpg') {await msg.reply('Only jpg images are supported');return}
       if(!media || !media?.data) {await msg.reply('Something went wrong');return}
       const output = `${(Math.random()*(10e10)).toFixed()}_media_dl.jpg`;
       const buffer = Buffer.from(media.data, 'base64');
       fs.writeFileSync(output,buffer);
       let outputUrl = await removebg(output);
-      let mediaData = await MessageMedia.fromUrl(outputUrl);
+      let mediaData = await MessageMedia.fromUrl(outputUrl, {filename: `piko_removebg_${Date.now()}`});
       if(!mediaData) {await msg.reply('Something went wrong');return}
       await chat.sendMessage(mediaData, {quotedMessageId: msg.id._serialized, sendMediaAsDocument: true});
       fs.unlinkSync(output);
@@ -194,6 +194,25 @@ client.on('message', async msg => {
       } else {
         await msg.reply("Sorry, Can't chat right now, I've hit my chat limit... Try later");      
       }
+    } else if(msg.body === '/aniinfo ') {
+      let parts = msg.body.split(' ');
+      if(parts.length < 2) {
+        msg.reply(`Correct usage is "/aniinfo [anime-id]", get the "anime-id" by running "/anisearch [Anime name]"`);return
+      }
+      let info = await aniinfo(parts[1]); 
+      let media = await MessageMedia.fromUrl(info.coverlink);
+      let message_template = `Anime Info\n\n
+      Name: ${info.name || 'unknown'}\n
+      ID: ${info.id || 'unknown'}\n\n
+      Type: ${info.type || 'unknown'}\n
+      Summary: ${info.description || 'unknown'}\n
+      Status: ${info.status || 'unknown'}\n
+      Released: ${info.released || 'unknown'}\n
+      Genre: ${info.genre || 'unknown'}\n
+      Other name: ${info.other_name || 'unknown'}
+      
+      ${info.ep_end ? '\n\nPiko can download up to ' + info.ep_end + ' episodes for this anime. Use /anidl [anime-id] [episode-number] to download' : ''}`;
+      await chat.sendMessage(media, {quotedMessageId: msg.id._serialized, caption: message_template});
     } else if(msg.body.startsWith('/anisearch')) {
         if(msg.body.split(' ').length === 1) { msg.reply('Use this command as: `/anisearch _anime-name_`');return}
         let y = msg.body.split(' ');
@@ -201,7 +220,6 @@ client.on('message', async msg => {
         let name = y.join(' ');
         let result = await anisearch(name);
         if(!result.success) { msg.reply('Something is wrong with the anime plugin');return }
-        console.dir(result.results,{depth: null});
         if(!result.results) { msg.reply('No results found, try shortening the search string, use Japanese name or checking the spelling');return  }
         const formattedReply = 
   `🎌 *Anime Search Results* 🎏
