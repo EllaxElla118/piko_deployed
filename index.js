@@ -167,7 +167,10 @@ client.on('message', async msg => {
       }
     } else if(msg.body.startsWith('/removebg')) {
       if(!msg.hasQuotedMsg) {await msg.reply('You forgot to tag the image');return}
+      let quotedMsg = await msg.getQuotedMessage();
+      if(!quotedMsg.hasMedia) {await msg.reply('You didnt tag an image');return}
       let media = await quotedMsg.downloadMedia();
+      if(media.mimetype !== 'image/jpg') {await msg.reply('Only jpg images are supported');return}
       if(!media || !media?.data) {await msg.reply('Something went wrong');return}
       const output = `${(Math.random()*(10e10)).toFixed()}_media_dl.jpg`;
       const buffer = Buffer.from(media.data, 'base64');
@@ -176,6 +179,7 @@ client.on('message', async msg => {
       let mediaData = await MessageMedia.fromUrl(outputUrl);
       if(!mediaData) {await msg.reply('Something went wrong');return}
       await chat.sendMessage(mediaData, {quotedMessageId: msg.id._serialized, sendMediaAsDocument: true});
+      fs.unlinkSync(output);
     } else if(msg.body === '/carbon') {
         if(!msg.hasQuotedMsg) { msg.reply('You forgot to tag the code to carbonize') }
         let quotedMsg = await msg.getQuotedMessage();
@@ -214,6 +218,9 @@ client.on('message', async msg => {
         msg.reply(formattedReply);
     } else if(msg.body.startsWith('/anidl')) {
       let parts = msg.body.split(' ');
+      if(parts.length < 3) {
+        msg.reply(`Correct usage is "/anidl [id] [episode-number]"`);return
+      }
       let vid = await anidl(parts[1],parts[2]);
       let stats = fs.statSync(vid);
       await chat.sendMessage(MessageMedia.fromFilePath(vid),{ quotedMessageId: msg.id._serialized, sendMediaAsDocument: stats.size > 10*1024*1024 });
@@ -233,6 +240,7 @@ client.on('message', async msg => {
         const stickerMedia = MessageMedia.fromFilePath(`${output}.webp`);*/
         const stickerMedia = MessageMedia.fromFilePath(`${output}`);
         await chat.sendMessage(stickerMedia, { quotedMessageId: msg.id._serialized, sendMediaAsSticker: true });
+        fs.unlinkSync(output);
     } else if (msg.body.startsWith('/ytdl ')) {
       try {
         const videoUrl = msg.body.split(' ')[1];
@@ -249,6 +257,8 @@ client.on('message', async msg => {
           const { stdout, stderr } = await execPromise(ffmpegCmd);
             let media = MessageMedia.fromFilePath(`output_${path}`);
             await chat.sendMessage(media, {caption: 'Your video is ready!', quotedMessageId: msg.id._serialized});
+            fs.unlinkSync(path);
+            fs.unlinkSync(`output_${path}`);
           } catch (error) {
         console.error('Error processing video:', error);
         msg.reply('An error occurred while processing your request.');
