@@ -50,7 +50,7 @@ async function dl(animeid, episode_number) {
             .start();        
             console.log("File converted");
             let aniOuput = `Vid-${Math.floor(Math.random() * 10e6)}.mp4`;
-            execSync(`ffmpeg -i ${playlistFilename}.mp4 -vf "scale=-2:360" -vcodec libx264 -crf 28 -preset slow -c:a aac -b:a 64k -movflags +faststart ${aniOuput}`);
+            execSync(`ffmpeg -i ${playlistFilename} -vf "scale=-2:360" -vcodec libx264 -crf 28 -preset slow -c:a aac -b:a 64k -movflags +faststart ${aniOuput}`);
             fs.unlinkSync(playlistFilename);
             resolve(aniOuput);
           } catch (error) {
