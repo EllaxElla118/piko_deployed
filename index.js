@@ -81,7 +81,7 @@ client.on('message', async msg => {
   try {
     let chat = await msg.getChat();
     await setState('typing', chat);
-  
+    await msg.react('⏳');
     if (msg.body.startsWith('/join ')) {
         const inviteCode = msg.body.split(' ')[1].replace("https://chat.whatsapp.com/", "");
         try {
@@ -286,6 +286,7 @@ client.on('message', async msg => {
         }
       }
     }
+    await msg.react('');
     await setState('none', chat); 
   } catch(e) {
     console.error('An error occured', e);

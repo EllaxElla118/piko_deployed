@@ -1,4 +1,6 @@
 const puppeteer = require('puppeteer');
+const { execSync } = require('child_process');
+const fs = require('fs');
 
 async function dl(animeid, episode_number) {
   return new Promise(async (resolve, reject) => {
@@ -47,7 +49,10 @@ async function dl(animeid, episode_number) {
             .setOutputFile(playlistFilename)
             .start();        
             console.log("File converted");
-            resolve(playlistFilename);
+            let aniOuput = `Vid-${Math.floor(Math.random() * 10e6)}.mp4`;
+            execSync(`ffmpeg -i ${playlistFilename}.mp4 -vf "scale=-2:360" -vcodec libx264 -crf 28 -preset slow -c:a aac -b:a 64k -movflags +faststart ${aniOuput}`);
+            fs.unlinkSync(playlistFilename);
+            resolve(aniOuput);
           } catch (error) {
             console.error('Error processing video:', error);
             reject(error);
