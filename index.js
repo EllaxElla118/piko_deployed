@@ -19,7 +19,7 @@ import { ytdl } from './downloader.cjs';
 import chatFunction from './chat.cjs';
 import removebg from './removebg.js'
 import carbonize from './carbon.js'
-import aniinfo from './aniinfo.cjs'
+import { aniinfo } from './aniinfo.cjs'
 
 const { Client, RemoteAuth, MessageMedia } = pkg;
 
@@ -79,11 +79,18 @@ client.on('ready', () => {
 client.initialize();
 
 client.on('message', async msg => {
-  try {
-    let chat = await msg.getChat();
+  let chat = await msg.getChat();
+  async function bot_unreact() {
+    await setState('none', chat);
+    await msg.react('');
+  }
+  async function bot_react() {
     await setState('typing', chat);
     await msg.react('⏳');
+  }
+  try {
     if (msg.body.startsWith('/join ')) {
+      await bot_react();
         const inviteCode = msg.body.split(' ')[1].replace("https://chat.whatsapp.com/", "");
         try {
           await client.acceptInvite(inviteCode);
@@ -92,6 +99,7 @@ client.on('message', async msg => {
           msg.reply("Couldn't join the group. Check the invite link and try again...");
         }
     } else if (msg.body === '/exit') {
+      await bot_react();
       if (chat.isGroup) {
         await msg.reply("Bye👋👋😘️");
         chat.leave();
@@ -99,12 +107,14 @@ client.on('message', async msg => {
         msg.reply('This command can only be used in a group!');
       }
     } else if (msg.body === '/admins') {
+      await bot_react();
       if (chat.isGroup) {
         const admins = chat.participants.filter(participant => participant.isAdmin || participant.isSuperAdmin); 
         const adminList = admins.map(admin => `- +${admin.id._serialized.replace('@c.us', '')}`).join('\n');
         await msg.reply(`The admins are:\n${adminList}`);
       }    
     } else if (msg.body === '/tagadmins') {
+      await bot_react();
       if (chat.isGroup) {
         let mentions = [];
         for (let participant of chat.participants) {
@@ -115,20 +125,24 @@ client.on('message', async msg => {
         chat.sendMessage('@admins', { mentions });
       }    
     } else if (msg.body.startsWith('/promote ')) {
+      await bot_react();
       if (chat.isGroup) {
         const number = msg.body.split(" ")[1].replace('+', '');
         await chat.promoteParticipants([number + '@c.us']);
         msg.reply(`${number} is now an admin`);
       }    
     } else if (msg.body.startsWith('/demote ')) {
+      await bot_react();
       if (chat.isGroup) {
         const number = msg.body.split(" ")[1].replace('+', '');
         await chat.demoteParticipants([number + '@c.us']);
         msg.reply(`${number} is no longer an admin`);
       }    
     } else if (msg.body === '/status') {
+      await bot_react();
       msg.reply("I'm alive😁💯️");
     } else if (msg.body === '/tagall') {
+      await bot_react();
       if (chat.isGroup) {
         let mentions = [];
         for (let participant of chat.participants) {
@@ -149,6 +163,7 @@ client.on('message', async msg => {
         msg.reply('This command can only be used in a group!');
       }
     } else if (msg.body === '/del' || msg.body === '/delete') {
+      await bot_react();
       if (msg.hasQuotedMsg) {
         const quotedMsg = await msg.getQuotedMessage();
         quotedMsg.delete(true);
@@ -156,6 +171,7 @@ client.on('message', async msg => {
         msg.reply('Please tag the message to be deleted');
       }
     } else if (msg.body.startsWith('/pin ')) {
+      await bot_react();
       if (msg.hasQuotedMsg) {
         const quotedMsg = await msg.getQuotedMessage();
         let time = await getPinTime(msg.body.split(" ")[1], msg.body.split(" ")[2]);
@@ -167,6 +183,7 @@ client.on('message', async msg => {
         msg.reply('Please tag the message to be pinned');
       }
     } else if(msg.body.startsWith('/removebg')) {
+      await bot_react();
       if(!msg.hasQuotedMsg) {await msg.reply('You forgot to tag the image');await bot_unreact();return}
       let quotedMsg = await msg.getQuotedMessage();
       if(!quotedMsg.hasMedia) {await msg.reply('You didnt tag an image');await bot_unreact();return}
@@ -181,12 +198,14 @@ client.on('message', async msg => {
       await chat.sendMessage(mediaData, {quotedMessageId: msg.id._serialized, sendMediaAsDocument: true});
       fs.unlinkSync(output);
     } else if(msg.body === '/carbon') {
+      await bot_react();
         if(!msg.hasQuotedMsg) { msg.reply('You forgot to tag the code to carbonize') }
         let quotedMsg = await msg.getQuotedMessage();
         let carbonOutputPath = await carbonize(quotedMsg.body);
         let carbonOutputMedia = await MessageMedia.fromFilePath(carbonOutputPath);
         await chat.sendMessage(carbonOutputMedia, {quotedMessageId: msg.id._serialized});
     } else if (msg.body.startsWith('/chat ')) {
+      await bot_react();
       let a = msg.body.replace("/chat ", "");
       let res = await chatFunction(a);
       if (res) {
@@ -194,12 +213,13 @@ client.on('message', async msg => {
       } else {
         await msg.reply("Sorry, Can't chat right now, I've hit my chat limit... Try later");      
       }
-    } else if(msg.body.startsWith('/aniinfo ')) {
-      let parts = msg.body.split(' ');
-      if(parts.length !== 2) {
+    } else if(msg.body.startsWith('/aniinfo')) {
+      await bot_react();
+      let id = msg.body.replace('/aniinfo','');
+      /*if(parts.length !== 2) {
         await msg.reply(`Correct usage is "/aniinfo [anime-id]", get the "anime-id" by running "/anisearch [Anime name]"`);await bot_unreact();return
-      }
-      let data = await aniinfo(parts[1]); 
+      }*/
+      let data = await aniinfo(id); 
       console.log(data);
       if(!data.success) { await msg.reply(info.error || 'Something went wrong...');await bot_unreact();return }
       let info = data.res;
@@ -217,6 +237,7 @@ client.on('message', async msg => {
       ${info.ep_end ? '\n\nPiko can download up to ' + info.ep_end + ' episodes for this anime. Use /anidl [anime-id] [episode-number] to download' : ''}`;
       await chat.sendMessage(media, {quotedMessageId: msg.id._serialized, caption: message_template});
     } else if(msg.body.startsWith('/anisearch')) {
+      await bot_react();
         if(msg.body.split(' ').length === 1) { await msg.reply('Use this command as:\n\n`/anisearch [anime-name]`');await bot_unreact();return}
         let y = msg.body.split(' ');
         y.shift();
@@ -246,6 +267,7 @@ client.on('message', async msg => {
       let stats = fs.statSync(vid);
       await chat.sendMessage(MessageMedia.fromFilePath(vid),{ quotedMessageId: msg.id._serialized, sendMediaAsDocument: stats.size > 10*1024*1024 });
     } else if(msg.body === '/sticker') {
+      await bot_react();
         if(!msg.hasQuotedMsg) {
           msg.reply('Please tag the image/video to convert to a sticker');await bot_unreact();return
         }
@@ -263,6 +285,7 @@ client.on('message', async msg => {
         await chat.sendMessage(stickerMedia, { quotedMessageId: msg.id._serialized, sendMediaAsSticker: true });
         fs.unlinkSync(output);
     } else if (msg.body.startsWith('/ytdl ')) {
+      await bot_react();
       try {
         const videoUrl = msg.body.split(' ')[1];
         const result = await ytdl(videoUrl);
@@ -285,6 +308,7 @@ client.on('message', async msg => {
         msg.reply('An error occurred while processing your request.');
       }
     } else if (msg.body === '/ban') {
+      await bot_react();
       if (msg.hasQuotedMsg) {
         const quotedMsg = await msg.getQuotedMessage();
         chat.removeParticipants([quotedMsg.author]);
@@ -293,6 +317,7 @@ client.on('message', async msg => {
         msg.reply(`Please tag the person to be banned or use /ban [The person's number]`);
       }
     } else if (msg.body.startsWith('/ban ')) {
+      await bot_react();
       let t = `Banned user @${msg.body.split(" ")[1]}\n`;
       if (msg.body.split(" ")[2]) {
         t += "Reason: " + msg.body.replace("/ban " + msg.body.split(" ")[1], "");
@@ -300,6 +325,7 @@ client.on('message', async msg => {
       msg.reply(t);
       chat.removeParticipants([msg.body.split(" ")[1].replace('+', '') + '@c.us']);
     } else if (msg.body === "/link") {
+      await bot_react();
       let l = await chat.getInviteCode();
       msg.reply('https://chat.whatsapp.com/' + l);
     } else if (msg.hasQuotedMsg) {
@@ -317,13 +343,12 @@ client.on('message', async msg => {
         }
       }
     }
-    async function bot_unreact() {
-      await msg.react('');
-    }
     await bot_unreact();
     await setState('none', chat); 
   } catch(e) {
     console.error('An error occured', e);
+    msg.reply('Internal error occured, issue has been reported to the bot builder');
+    await bot_unreact();
   }
 });
   
