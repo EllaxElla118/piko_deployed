@@ -335,9 +335,9 @@ client.on('message', async msg => {
         }
       }
     }
-    
+
     async function bot_unreact() {
-      const myNumberId = await client.getNumberId();
+      const myNumberId = '2349113642216@c.us';
       const reactions = await msg.getReactions();
     
       for (const reaction of reactions) {
