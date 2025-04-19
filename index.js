@@ -213,7 +213,7 @@ client.on('message', async msg => {
       }
       let data = await aniinfo(parts[1]); 
       console.log(data);
-      if(!data.success) { await msg.reply(info.error || 'Something went wrong...');await bot_unreact();return }
+      if(!data.success) { await msg.reply(data.error || 'Something went wrong...');await bot_unreact();return }
       let info = data.res;
       let media = await MessageMedia.fromUrl(data.coverlink);
       let message_template = `Anime Info\n\n
@@ -335,10 +335,22 @@ client.on('message', async msg => {
         }
       }
     }
+    
     async function bot_unreact() {
-      await setState('none', chat);
-      await msg.react('');
+      const myNumberId = await client.getNumberId();
+      const reactions = await msg.getReactions();
+    
+      for (const reaction of reactions) {
+        const isMyReaction = reaction.senders.some(
+          sender => sender.senderId === myNumberId
+        );
+    
+        if (isMyReaction) {
+          await msg.react('');
+        }
+      }
     }
+    
     async function bot_react() {
       await setState('typing', chat);
       await msg.react('⏳');
