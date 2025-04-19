@@ -56,7 +56,12 @@ export async function dispatchWorkflow() {
   }
 }
 
-export async function startCountdown() {
+export async function startCountdown(endNow = false) {
+  if(endNow) {
+    console.log('Dispatching new workflow');
+    await cancelWorkflowRun(CURRENT_RUN_ID);
+    await dispatchWorkflow();
+  }
   console.log('⏳ Waiting for 5 hours for next deploy ...');
   await new Promise(resolve => setTimeout(resolve, 18_000_000));
   await cancelWorkflowRun(CURRENT_RUN_ID);
