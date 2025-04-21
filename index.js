@@ -20,7 +20,7 @@ import chatFunction from './chat.cjs';
 import removebg from './removebg.js'
 import carbonize from './carbon.js'
 import { aniinfo } from './aniinfo.cjs'
-import { moviesearch } from './moviesearch.cjs'
+import moviesearch from './moviesearch.cjs'
 
 const { Client, RemoteAuth, MessageMedia } = pkg;
 
