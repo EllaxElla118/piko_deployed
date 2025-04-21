@@ -214,20 +214,19 @@ client.on('message', async msg => {
       }
       let data = await aniinfo(parts[1]); 
       console.log(data);
-      if(!data.success) { await msg.reply(data.error || 'Something went wrong...');await bot_unreact();return }
-      let info = data.res;
+      if(!data.success) { await msg.reply('Bot error: ' + data.error || 'Something went wrong...');await bot_unreact();return }
       let media = await MessageMedia.fromUrl(data.coverlink);
       let message_template = `Anime Info\n\n
-      Name: ${info.name || 'unknown'}\n
-      ID: ${info.id || 'unknown'}\n\n
-      Type: ${info.type || 'unknown'}\n
-      Summary: ${info.description || 'unknown'}\n
-      Status: ${info.status || 'unknown'}\n
-      Released: ${info.released || 'unknown'}\n
-      Genre: ${info.genre || 'unknown'}\n
-      Other name: ${info.other_name || 'unknown'}
+      Name: ${data.name || 'unknown'}\n
+      ID: ${data.id || 'unknown'}\n\n
+      Type: ${data.type || 'unknown'}\n
+      Summary: ${data.description || 'unknown'}\n
+      Status: ${daga.status || 'unknown'}\n
+      Released: ${data.released || 'unknown'}\n
+      Genre: ${data.genre || 'unknown'}\n
+      Other name: ${data.other_name || 'unknown'}
       
-      ${info.ep_end ? '\n\nPiko can download up to ' + info.ep_end + ' episodes for this anime. Use /anidl [anime-id] [episode-number] to download' : ''}`;
+      ${data.ep_end ? '\n\nPiko can download up to ' + data.ep_end + ' episodes for this anime. Use /anidl [anime-id] [episode-number] to download' : ''}`;
       await chat.sendMessage(media, {quotedMessageId: msg.id._serialized, caption: message_template});
     } else if(msg.body.startsWith('/anisearch')) {
       await bot_react();
