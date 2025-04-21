@@ -26,7 +26,6 @@ async function aniinfo(id) {
           let res = {
       success: true,
       name: document.querySelector('html body div#wrapper_inside div#wrapper div#wrapper_bg section.content section.content_left div.main_body div.anime_info_body div.anime_info_body_bg img')?.nextElementSibling?.innerText,
-      id: id,
       coverlink: `${document.querySelector('html body div#wrapper_inside div#wrapper div#wrapper_bg section.content section.content_left div.main_body div.anime_info_body div.anime_info_body_bg img').src}`,
       description: `${document.querySelector('.description').innerText}` || undefined,
       type: `${c[0]?.innerText?.replace('Type: ', '')}` || undefined,
