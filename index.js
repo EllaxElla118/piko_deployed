@@ -221,7 +221,7 @@ client.on('message', async msg => {
       ID: ${data.id || 'unknown'}\n\n
       Type: ${data.type || 'unknown'}\n
       Summary: ${data.description || 'unknown'}\n
-      Status: ${daga.status || 'unknown'}\n
+      Status: ${data.status || 'unknown'}\n
       Released: ${data.released || 'unknown'}\n
       Genre: ${data.genre || 'unknown'}\n
       Other name: ${data.other_name || 'unknown'}
