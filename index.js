@@ -20,6 +20,7 @@ import chatFunction from './chat.cjs';
 import removebg from './removebg.js'
 import carbonize from './carbon.js'
 import { aniinfo } from './aniinfo.cjs'
+import { moviesearch } from './moviesearch.cjs'
 
 const { Client, RemoteAuth, MessageMedia } = pkg;
 
@@ -276,6 +277,9 @@ client.on('message', async msg => {
         const stickerMedia = MessageMedia.fromFilePath(`${output}`);
         await chat.sendMessage(stickerMedia, { quotedMessageId: msg.id._serialized, sendMediaAsSticker: true });
         fs.unlinkSync(output);
+    } else if(msg.body.startsWith('/moviesearch ')) {
+      let movieName = msg.body.replace('', '');
+      await moviesearch(movieName);
     } else if (msg.body.startsWith('/ytdl ')) {
       await bot_react();
       try {
