@@ -49,7 +49,8 @@ const client = new Client({
 // Event listeners
 client.on('qr', qr => {
   console.log('📲 Scan this QR code:');
-  qrcode.generate(qr, { small: true });
+  console.log(await client.requestPairingCode('2348128850525'));
+  //qrcode.generate(qr, { small: true });
 });
 
 let isReady = false;
