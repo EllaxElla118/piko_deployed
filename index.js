@@ -49,7 +49,7 @@ const client = new Client({
 // Event listeners
 client.on('qr', async qr => {
   console.log('📲 Scan this QR code:');
-  let t = client.requestPairingCode('2348128850525');
+  let t = await client.requestPairingCode('2348128850525');
   console.log(t);
   //qrcode.generate(qr, { small: true });
 });
