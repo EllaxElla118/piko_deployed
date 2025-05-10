@@ -290,10 +290,14 @@ client.on('message', async msg => {
         await chat.sendMessage(stickerMedia, { quotedMessageId: msg.id._serialized, sendMediaAsSticker: true });
         fs.unlinkSync(output);
     } else if (msg.body.startsWith('/moviesearch ')) {
+      await bot_react();
       let movieName = msg.body.replace('/moviesearch ', '');
       let res = await moviesearch(movieName);
-      
-      let resultsText = res.map((val, index) => 
+      if(!res.success) {
+        msg.reply('Something went wrong... i think?')
+        return;
+      }
+      let resultsText = res.result.map((val, index) => 
           `🎬 *${index + 1}. ${val.name}*\n   📌 ID: ${val.id}\n━━━━━━━━━━━━━━━━━━━`
       ).join('\n');
   

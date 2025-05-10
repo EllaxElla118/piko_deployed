@@ -30,7 +30,7 @@ const url = `https://sflix.to/search/${name.split(' ').join('-')}`;
         return results
       });
       console.log(result);
-      return result;
+      return {sucess: true, result};
 } catch (error) {
   return { success: false, error }
 }
