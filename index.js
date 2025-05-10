@@ -82,9 +82,19 @@ client.on('ready', () => {
 client.initialize();
 
 client.on('message', async msg => {
+  async function bot_unreact() {
+    if (botReacted) {
+      await msg.react('');
+    }
+  }    
+  async function bot_react() {
+    await setState('typing', chat);
+    await msg.react('⏳');
+    botReacted = true;
+  }
+  let chat = await msg.getChat();
   let botReacted = false;
   try {
-    let chat = await msg.getChat();
     if (msg.body.startsWith('/join ')) {
       await bot_react();
         const inviteCode = msg.body.split(' ')[1].replace("https://chat.whatsapp.com/", "");
@@ -279,10 +289,21 @@ client.on('message', async msg => {
         const stickerMedia = MessageMedia.fromFilePath(`${output}`);
         await chat.sendMessage(stickerMedia, { quotedMessageId: msg.id._serialized, sendMediaAsSticker: true });
         fs.unlinkSync(output);
-    } else if(msg.body.startsWith('/moviesearch ')) {
-      let movieName = msg.body.replace('', '');
-      await moviesearch(movieName);
-    } else if (msg.body.startsWith('/ytdl ')) {
+    } else if (msg.body.startsWith('/moviesearch ')) {
+      let movieName = msg.body.replace('/moviesearch ', '');
+      let res = await moviesearch(movieName);
+      
+      let resultsText = res.map((val, index) => 
+          `🎬 *${index + 1}. ${val.name}*\n   📌 ID: ${val.id}\n━━━━━━━━━━━━━━━━━━━`
+      ).join('\n');
+  
+      let message_template = 
+          `🍿 *Movie Search Results for* "${movieName}" 🎥\n\n` +
+          `${resultsText || '❌ No results found'}\n\n` +
+          `_🔍 Total results: ${res.length}_`;
+  
+      msg.reply(message_template);
+  } else if (msg.body.startsWith('/ytdl ')) {
       await bot_react();
       try {
         const videoUrl = msg.body.split(' ')[1];
@@ -343,22 +364,11 @@ client.on('message', async msg => {
         }
       }
     }
-
-    async function bot_unreact() {
-        if (botReacted) {
-          await msg.react('');
-        }
-    }
-    
-    async function bot_react() {
-      await setState('typing', chat);
-      await msg.react('⏳');
-      botReacted = true;
-    }
-    await bot_unreact();
-    await setState('none', chat); 
   } catch(e) {
     console.error('An error occured', e);
+  } finally {
+    await bot_unreact();
+    await setState('none', chat)
   }
 });
   
