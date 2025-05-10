@@ -21,7 +21,7 @@ const url = `https://sflix.to/search/${name.split(' ').join('-')}`;
       await page.goto(url, { timeout: 0, waitUntil: 'domcontentloaded' });
       let result = await page.evaluate(()=>{
         let c = document.querySelectorAll('.flw-item');
-        if (!c.length) return { success: false, error: 'Couldn\'t fetch movies' };
+        if (!c.length) return null;
 
         let results = Array.from(c).map(val => ({
             name: val.querySelector('.film-name')?.innerText || 'Unknown',
@@ -29,8 +29,7 @@ const url = `https://sflix.to/search/${name.split(' ').join('-')}`;
         }));
         return results
       });
-      console.log(result);
-      return {sucess: true, result};
+      return !result ? { success: false, error: "Couldn't find movie" } : {sucess: true, result};
 } catch (error) {
   console.error(error);
   return { success: false, error }

@@ -293,6 +293,7 @@ client.on('message', async msg => {
       await bot_react();
       let movieName = msg.body.replace('/moviesearch ', '');
       let res = await moviesearch(movieName);
+      console.log(res);
       if(!res.success) {
         msg.reply(res.error || 'Something went wrong... i think?');
         return;
