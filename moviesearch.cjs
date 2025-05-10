@@ -29,10 +29,12 @@ const url = `https://sflix.to/search/${name.split(' ').join('-')}`;
         }));
         return results
       });
-      return !result ? { success: false, error: "Couldn't find movie" } : {sucess: true, result};
+      return !result ? { success: false, error: "Couldn't find movie" } : {success: true, result};
 } catch (error) {
   console.error(error);
   return { success: false, error }
+} finally {
+  await browser.close();
 }
 }
 
