@@ -9,7 +9,7 @@ const url = `https://sflix.to/search/${name.split(' ').join('-')}`;
   let browser;
     try {
       browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         executablePath: '/usr/bin/google-chrome-stable',
         args: [
           '--no-sandbox',
