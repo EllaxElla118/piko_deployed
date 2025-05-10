@@ -294,7 +294,7 @@ client.on('message', async msg => {
       let movieName = msg.body.replace('/moviesearch ', '');
       let res = await moviesearch(movieName);
       if(!res.success) {
-        msg.reply('Something went wrong... i think?')
+        msg.reply(res.error || 'Something went wrong... i think?');
         return;
       }
       let resultsText = res.result.map((val, index) => 
