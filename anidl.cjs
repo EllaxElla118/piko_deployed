@@ -63,8 +63,8 @@ async function dl(animeid, episode_number) {
           request.continue();
         }
       });
-      console.log(`https://ww30.gogoanimes.fi/${animeid}-episode-${episode_number}`);
-      await page.goto(`https://ww30.gogoanimes.fi/${animeid}-episode-${episode_number}`, { timeout: 0, waitUntil: 'domcontentloaded' });
+      console.log(`https://ww31.gogoanimes.fi/${animeid}-episode-${episode_number}`);
+      await page.goto(`https://ww31.gogoanimes.fi/${animeid}-episode-${episode_number}`, { timeout: 0, waitUntil: 'domcontentloaded' });
 
       // Retrieve the iframe URL if available
       let link = await page.evaluate(() => {
