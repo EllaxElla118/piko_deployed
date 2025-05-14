@@ -4,7 +4,7 @@ async function aniinfo(id) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 5000); // 5s timeout
 
-  const url = `https://ww30.gogoanimes.fi/category/${encodeURIComponent(id)}`;
+  const url = `https://www31.gogoanimes.fi/category/${id}`;
   let browser;
     try {
       browser = await puppeteer.launch({

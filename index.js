@@ -258,7 +258,7 @@ client.on('message', async msg => {
   ).join('\n\n')}
   ────────────────
   ${result.results.length === 0 ? 
-    "❌ No results found" : 
+    "❌ No results found, check the spelling or try the japanese name (use only english alphabets though)" : 
     `📑 Found ${result.results.length} matches\n` + 
     "Currently displaying up to 5 results. Increase the search results by using the command /anisearch [name] [results]\n" +
     "Use the ID with /aniinfo [ID] to get details or /anidl [ID] [episode] to download \n\n`Example: /aniinfo one-piece`"}`;
