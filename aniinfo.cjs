@@ -24,7 +24,7 @@ async function aniinfo(id) {
       success: true,
       name: document.querySelector('html body div#wrapper_inside div#wrapper div#wrapper_bg section.content section.content_left div.main_body div.anime_info_body div.anime_info_body_bg img')?.nextElementSibling?.innerText,
       coverlink: `${document.querySelector('html body div#wrapper_inside div#wrapper div#wrapper_bg section.content section.content_left div.main_body div.anime_info_body div.anime_info_body_bg img').src}`,
-      description: `${document.querySelector('.description').innerText}` || undefined,
+      description: `${c[1]?.innerText?.replace('Plot Summary: ', '')}` || undefined,
       type: `${c[0]?.innerText?.replace('Type: ', '')}` || undefined,
       genre: `${c[2]?.innerText?.replace('Genre: ', '')}` || undefined,
       released: `${c[3]?.innerText?.replace('Released: ', '')}` || undefined,
