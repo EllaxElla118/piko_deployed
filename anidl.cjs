@@ -64,8 +64,9 @@ async function dl(animeid, episode_number) {
         }
       });
       console.log(`https://www31.gogoanimes.fi/${animeid}-episode-${episode_number}`);
-      await page.goto(`https://www31.gogoanimes.fi/${animeid}-episode-${episode_number}`, { timeout: 0, waitUntil: 'domcontentloaded' });
-
+      await page.goto(`https://www31.gogoanimes.fi/${animeid}-episode-${episode_number}`, { timeout: 0, waitUntil: ['domcontentloaded', 'networkidle0'] });
+      await page.keyboard.press('Space');
+/*
       // Retrieve the iframe URL if available
       let link = await page.evaluate(() => {
         const iframe = document.querySelector('iframe');
@@ -76,7 +77,9 @@ async function dl(animeid, episode_number) {
         await page.goto(link, { timeout: 0 });
       } else {
         console.log('No iframe found on the page.');
+        throw new Error('Couldnt download');
       }
+        */
     } catch (e) {
       reject(e);
     }

@@ -31,7 +31,7 @@ async function aniinfo(id) {
       released: `${c[2]?.innerText?.replace('Released: ', '')}` || undefined,
       status: `${c[4]?.innerText?.replace('Status: ', '')}` || undefined,
       other_name: `${c[5]?.innerText?.replace('Other name: ', '')}` || undefined,
-      ep_end: document.querySelector('#episode_related')?.firstElementChild?.querySelector('.name')?.innerText?.replace('EP ')
+      ep_end: document.querySelector('#episode_related')?.firstElementChild?.querySelector('.name')?.innerText?.replace('EP ','')
         }
         return res
       });

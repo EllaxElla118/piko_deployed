@@ -267,7 +267,7 @@ client.on('message', async msg => {
     } else if(msg.body.startsWith('/anidl')) {
       let parts = msg.body.split(' ');
       if(parts.length < 3) {
-        msg.reply(`Correct usage is "/anidl [id] [episode-number]"`);await bot_unreact();return
+        msg.reply(`Correct usage is "/anidl [id] [episode-number]", use command /anisearch to Search for an anime and get its ID`);await bot_unreact();return
       }
       let vid = await anidl(parts[1],parts[2]);
       let stats = fs.statSync(vid);
@@ -282,11 +282,7 @@ client.on('message', async msg => {
         let media = await quotedMsg.downloadMedia();
         const output = `${(Math.random()*(10e10)).toFixed()}_sticker.jpg`;
         const buffer = Buffer.from(media.data, 'base64');
-        fs.writeFileSync(output,buffer);/*
-        const ffmpegCmd = `ffmpeg -i ${output} -vcodec libwebp -lossless 1 ${output}.webp`;
-        let execPromise = util.promisify(exec);
-        const { stdout, stderr } = await execPromise(ffmpegCmd);
-        const stickerMedia = MessageMedia.fromFilePath(`${output}.webp`);*/
+        fs.writeFileSync(output,buffer);
         const stickerMedia = MessageMedia.fromFilePath(`${output}`);
         await chat.sendMessage(stickerMedia, { quotedMessageId: msg.id._serialized, sendMediaAsSticker: true });
         fs.unlinkSync(output);
