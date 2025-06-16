@@ -25,7 +25,7 @@ async function moviesearch(name) {
 
       let results = Array.from(c).map(val => ({
         name: val.querySelector('.film-name')?.innerText || 'Unknown',
-        id: val.querySelector('a')?.href.split('/').shift() + '-' + val.querySelector('a')?.href.split('/').pop().replace('free-', '') || 'Unknown'
+        id: val.querySelector('a')?.href.split('/')[3] + '_' + val.querySelector('a')?.href.split('/').pop().replace('free-', '') || 'Unknown'
       }));
       return results
     });
