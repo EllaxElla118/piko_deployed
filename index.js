@@ -92,9 +92,10 @@ client.on('message', async msg => {
     await msg.react('⏳');
     botReacted = true;
   }
-  let chat = await msg.getChat();
+  let chat;
   let botReacted = false;
   try {
+    chat = await msg.getChat();
     if (msg.body.startsWith('/join ')) {
       await bot_react();
         const inviteCode = msg.body.split(' ')[1].replace("https://chat.whatsapp.com/", "");
