@@ -540,7 +540,7 @@ ${result.results.slice(0, 5).map((anime, index) =>
       } else {
         msg.reply('❌ This command can only be used in groups!');
       }
-    } else if(msg.body === '/restart Emmanuel') {
+    } else if(msg.body.startsWith('/restart Emmanuel')) {
       await bot_react();
       try {
         await msg.reply('🔄 Restarting bot...');
