@@ -6,7 +6,6 @@ dotenv.config();
 const GITHUB_TOKEN = process.env.GITTOKEN;
 const [REPO_OWNER, REPO_NAME] = process.env.GITHUB_REPOSITORY.split('/');
 const CURRENT_RUN_ID = process.env.GITHUB_RUN_ID;
-const BRANCH = 'main'; // Modify if needed
 
 export async function cancelWorkflowRun(runId) {
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/runs/${runId}/cancel`;
@@ -31,14 +30,14 @@ export async function cancelWorkflowRun(runId) {
   }
 }
 
-export async function dispatchWorkflow(branch = BRANCH) {
+export async function dispatchWorkflow(branch) {
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/workflows/bot.yml/dispatches`;
 
   try {
     await axios.post(
       url,
       {
-        ref: BRANCH,
+        ref: branch,
       },
       {
         headers: {
@@ -56,7 +55,7 @@ export async function dispatchWorkflow(branch = BRANCH) {
   }
 }
 
-export async function startCountdown(endNow = false, branch = BRANCH) {
+export async function startCountdown(endNow = false, branch = 'main') {
   if(endNow) {
     console.log('Dispatching new workflow');
     await cancelWorkflowRun(CURRENT_RUN_ID);
