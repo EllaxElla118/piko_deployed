@@ -1,4 +1,8 @@
-const { faker } = require('@faker-js/faker');
+let faker;
+(async () => {
+  const mod = await import('@faker-js/faker');
+  faker = mod.faker;
+})();
 
 let currentWord = null;
 let gameActive = false;
