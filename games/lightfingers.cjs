@@ -1,50 +1,51 @@
-const words = ["apple", "banana", "cherry", "dragon", "orange", "grape"];
+const { faker } = require('@faker-js/faker');
+
 let currentWord = null;
 let gameActive = false;
-let scores = new Map();
-function getRandomWord() {
-  return words[Math.floor(Math.random() * words.length)];
-}
 
-async function startGame(message) {
-  if (gameActive) return message.reply("A round is already in progress!");
+// Start a new round
+async function startGame(message, store) {
+  if (gameActive) return message.reply("⚠️ A round is already in progress!");
+
   gameActive = true;
+  currentWord = faker.word.sample();
 
-  currentWord = getRandomWord();
   await message.reply(`⚡ FASTEST FINGER ⚡\nType this word exactly:\n\n👉 *${currentWord}*`);
 }
-/*
-// Handle messages
-client.on("message", async msg => {
-  const chat = await msg.getChat();
-  const text = msg.body.trim();
 
-  // Start command
-  if (text === "!start") return startGame(msg);
-
-  // Ignore if no active game
+// Handle incoming message (to be wired in index.js)
+async function handleMessage(message, store) {
   if (!gameActive || !currentWord) return;
 
-  // Check response
+  const text = message.body.trim();
+
   if (text === currentWord) {
     gameActive = false;
-    const userId = msg.author || msg.from; // Works for groups & DMs
+
+    const userId = message.author || message.from;
+    const displayName = message._data?.notifyName || userId.split('@')[0];
 
     // Update score
-    const prev = scores.get(userId) || 0;
-    scores.set(userId, prev + 1);
+    const currentScore = (await store.get(userId)) || 0;
+    await store.set(userId, currentScore + 1);
 
-    await msg.reply(`🎉 *${msg._data.notifyName || userId}* was the fastest!\nWord: ${currentWord}\nScore: ${scores.get(userId)} pts`);
+    await message.reply(`🎉 *${displayName}* was the fastest!\nWord: ${currentWord}\nScore: ${currentScore + 1}`);
 
-    // Optionally show leaderboard
-    let leaderboard = Array.from(scores.entries())
+    // Show leaderboard
+    const allScores = await store.getAll();
+    const leaderboard = Object.entries(allScores)
       .sort((a, b) => b[1] - a[1])
       .map(([id, sc], i) => `${i + 1}. ${id.split('@')[0]} — ${sc}`)
       .join('\n');
+
+    const chat = await message.getChat();
     await chat.sendMessage(`🏆 Leaderboard:\n${leaderboard}`);
+
     currentWord = null;
   }
-});
-*/
+}
 
-module.exports = { startGame };
+module.exports = {
+  startGame,
+  handleMessage
+};

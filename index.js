@@ -23,6 +23,17 @@ import { aniinfo } from './aniinfo.cjs'
 import moviesearch from './moviesearch.cjs'
 import games from './games/index.cjs';
 
+const game_store = {
+  _data: new Map(),
+  async get(key) { return this._data.get(key); },
+  async set(key, val) { this._data.set(key, val); },
+  async getAll() {
+    const obj = {};
+    this._data.forEach((v, k) => obj[k] = v);
+    return obj;
+  }
+};
+
 const { Client, RemoteAuth, MessageMedia, LocalAuth } = pkg;
 
 dotenv.config();
@@ -217,6 +228,8 @@ client.on('message', async msg => {
     } else if (msg.body === '/games lightfingers') {
       await bot_react();
       await games.lightfingers.startGame(msg);
+    } else if(await msg.getQuotedMessage().body.startsWith('⚡ FASTEST FINGER ⚡')) {
+      await games.lightfingers.handleMessage(msg,game_store);      
     } else if (msg.body.startsWith('/pin ')) {
       await bot_react();
       if (msg.hasQuotedMsg) {
