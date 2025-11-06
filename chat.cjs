@@ -1,6 +1,6 @@
 const { GoogleGenAI } = require("@google/genai");
 
-const ai = new GoogleGenAI({ apiKey: "AIzaSyD7vvsJW9CYE1jGbKXeMS-Jbbc6_hJgSBA" });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 const systemInstruction = "You are Piko, A Whatsapp chatbot. No need to be formal. Be brief and concise, limit responses to about 40 words if possible. All responses should be formatted to Whatsapp's text-formatting Standards";
 
