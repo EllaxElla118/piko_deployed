@@ -6,6 +6,7 @@
       "start": "node index.js"
     },
     "dependencies": {
+      "cloudscraper": "latest",
       "axios": "^1.6.0",
       "puppeteer": "latest",
       "qrcode-terminal": "^0.12.0",
