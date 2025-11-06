@@ -6,7 +6,7 @@ async function anisearch(name) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 5000); // 5s timeout
 
-  const url = `https://ww30.gogoanimes.fi/search.html?keyword=${encodeURIComponent(name)}`;
+  const url = `https://www13.gogoanimes.fi/search.html?keyword=${encodeURIComponent(name)}`;
   console.log(`[Anisearch] Searching for: ${name}`);
   console.log(`[Anisearch] URL: ${url}`);
 
