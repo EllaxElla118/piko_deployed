@@ -47,4 +47,4 @@ client.on("message", async msg => {
 });
 */
 
-modules.exports = startGame;
+module.exports = startGame;

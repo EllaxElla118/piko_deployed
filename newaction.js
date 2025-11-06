@@ -46,7 +46,7 @@ export async function dispatchWorkflow(branch) {
         },
       }
     );
-    console.log(`🚀 Dispatched a new workflow run on the ${BRANCH} branch.`);
+    console.log(`🚀 Dispatched a new workflow run on the '${branch}' branch.`);
   } catch (error) {
     console.error(
       '❌ Failed to dispatch workflow:',
