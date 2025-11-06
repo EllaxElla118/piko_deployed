@@ -21,6 +21,7 @@ import removebg from './removebg.js'
 import carbonize from './carbon.js'
 import { aniinfo } from './aniinfo.cjs'
 import moviesearch from './moviesearch.cjs'
+import games from './games/index.cjs';
 
 const { Client, RemoteAuth, MessageMedia, LocalAuth } = pkg;
 
@@ -213,6 +214,9 @@ client.on('message', async msg => {
       } else {
         msg.reply('❌ Please reply to the message to be deleted');
       }
+    } else if (msg.body === '/games lightfingers') {
+      await bot_react();
+      await games.lightfingers.startGame(msg);
     } else if (msg.body.startsWith('/pin ')) {
       await bot_react();
       if (msg.hasQuotedMsg) {
