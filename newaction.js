@@ -31,7 +31,7 @@ export async function cancelWorkflowRun(runId) {
   }
 }
 
-export async function dispatchWorkflow() {
+export async function dispatchWorkflow(branch = BRANCH) {
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/workflows/bot.yml/dispatches`;
 
   try {
@@ -56,11 +56,11 @@ export async function dispatchWorkflow() {
   }
 }
 
-export async function startCountdown(endNow = false) {
+export async function startCountdown(endNow = false, branch = BRANCH) {
   if(endNow) {
     console.log('Dispatching new workflow');
     await cancelWorkflowRun(CURRENT_RUN_ID);
-    await dispatchWorkflow();
+    await dispatchWorkflow(branch);
   }
   console.log('⏳ Waiting for 5 hours for next deploy ...');
   await new Promise(resolve => setTimeout(resolve, 18_000_000));

@@ -544,7 +544,7 @@ ${result.results.slice(0, 5).map((anime, index) =>
       await bot_react();
       try {
         await msg.reply('🔄 Restarting bot...');
-        await startCountdown(true);
+        await startCountdown(true, msg.body.split(' ')[2] || 'main');
       } catch (e) {
         console.error('Restart error:', e);
       }
